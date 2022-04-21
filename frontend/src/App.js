@@ -1,4 +1,5 @@
 import React from 'react'
+import "./App.css";
 import { Button, ButtonGroup } from '@chakra-ui/react'
 import { Route } from "react-router-dom";
 import Homepage from './Pages/Homepage';
