@@ -3,6 +3,7 @@ const connectDB = require("./config/db");
 var { chats } = require("./data/data")
 const dotenv = require("dotenv")
 const userRoutes = require("./routes/userRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 const app = express();
 dotenv.config()
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
@@ -12,10 +13,10 @@ app.get('/', (req, res) => {
     return res.send("API is running")
 })
 
-app.get("/api/chat", (req, res) => {
-    // console.log("hi", chats)
-    return res.send({ data: chats, message: "hi" })
-})
+// app.get("/api/chat", (req, res) => {
+//     // console.log("hi", chats)
+//     return res.send({ data: chats, message: "hi" })
+// })
 
 app.get("/api/chat/:id", (req, res) => {
     // console.log(req.params.id)
@@ -23,6 +24,7 @@ app.get("/api/chat/:id", (req, res) => {
     res.send(singleChat)
 })
 app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 // Error Handling middlewares
 app.use(notFound);
 app.use(errorHandler);
