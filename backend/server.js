@@ -2,11 +2,11 @@ const express = require("express")
 const connectDB = require("./config/db");
 var { chats } = require("./data/data")
 const dotenv = require("dotenv")
-
+const userRoutes = require("./routes/userRoutes");
 const app = express();
 dotenv.config()
 connectDB();
-
+app.use(express.json()); // to accept json data
 app.get('/', (req, res) => {
     return res.send("API is running")
 })
@@ -21,5 +21,6 @@ app.get("/api/chat/:id", (req, res) => {
     const singleChat = chats.find(c => c._id === req.params.id)
     res.send(singleChat)
 })
+app.use("/api/user", userRoutes);
 app.listen(process.env.PORT || 5000,   console.log(`Server running on PORT ${process.env.PORT}...`.yellow.bold)
 )
