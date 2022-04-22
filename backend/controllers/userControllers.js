@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const generateToken = require("../config/generateToken");
 const jwt = require("jsonwebtoken");
+
 const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password, pic } = req.body;
 
@@ -13,8 +14,8 @@ const registerUser = asyncHandler(async (req, res) => {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-       return res.status(400).send({message:"User already exists"})
-        // throw new Error("User already exists");
+        res.status(400);
+        throw new Error("User already exists");
     }
 
     const user = await User.create({
@@ -23,7 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
         password,
         pic,
     });
-    const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET);
+
     if (user) {
         res.status(201).json({
             _id: user._id,
@@ -31,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
             email: user.email,
             isAdmin: user.isAdmin,
             pic: user.pic,
-            token:token,
+            token: generateToken(user._id),
         });
     } else {
         res.status(400);
@@ -39,4 +40,24 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { registerUser };
+const authUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (user && (await user.matchPassword(password))) {
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            pic: user.pic,
+            token: generateToken(user._id),
+        });
+    } else {
+        res.status(401).send({ message: "Invalid Email or Password" })
+        //   throw new Error("Invalid Email or Password");
+    }
+});
+
+module.exports = { registerUser, authUser };
