@@ -5,6 +5,7 @@ const dotenv = require("dotenv")
 const userRoutes = require("./routes/userRoutes");
 const app = express();
 dotenv.config()
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 connectDB();
 app.use(express.json()); // to accept json data
 app.get('/', (req, res) => {
@@ -22,5 +23,8 @@ app.get("/api/chat/:id", (req, res) => {
     res.send(singleChat)
 })
 app.use("/api/user", userRoutes);
+// Error Handling middlewares
+app.use(notFound);
+app.use(errorHandler);
 app.listen(process.env.PORT || 5000,   console.log(`Server running on PORT ${process.env.PORT}...`.yellow.bold)
 )
