@@ -4,6 +4,7 @@ var { chats } = require("./data/data")
 const dotenv = require("dotenv")
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 const app = express();
 dotenv.config()
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
@@ -25,6 +26,7 @@ app.get("/api/chat/:id", (req, res) => {
 })
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/message", messageRoutes);
 // Error Handling middlewares
 app.use(notFound);
 app.use(errorHandler);
