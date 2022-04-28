@@ -9,6 +9,7 @@ import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Tooltip } from "@chakra-ui/tooltip";
 import { Avatar } from "@chakra-ui/avatar";
 import axios from "axios";
+import { Spinner } from "@chakra-ui/spinner";
 import {
     Drawer,
     DrawerBody,
@@ -33,6 +34,8 @@ const SideDrawer = () => {
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingChat, setLoadingChat] = useState(false);
+
+
 
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -192,7 +195,7 @@ const SideDrawer = () => {
                             ))
                         )
                         }
-                        {/* {loadingChat && <Spinner ml="auto" d="flex" />} */}
+                        {loadingChat && <Spinner ml="auto" d="flex" />}
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
