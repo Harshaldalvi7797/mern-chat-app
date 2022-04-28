@@ -43,7 +43,35 @@ const GroupChatModal = ({ children }) => {
         setSelectedUsers([...selectedUsers, userToAdd]);
     };
 
-    const handleSearch = async (query) => { }
+    const handleSearch = async (query) => {
+        setSearch(query);
+        if (!query) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            };
+            const { data } = await axios.get(`/api/user?search=${search}`, config);
+            console.log(data);
+            setLoading(false);
+            setSearchResult(data);
+        }
+        catch (error) {
+            toast({
+                title: "Error Occured!",
+                description: "Failed to Load the Search Results",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom-left",
+            });
+        }
+    }
 
 
     const handleDelete = (delUser) => {
@@ -72,14 +100,14 @@ const GroupChatModal = ({ children }) => {
                             <Input
                                 placeholder="Chat Name"
                                 mb={3}
-
+                                onChange={(e) => setGroupChatName(e.target.value)}
                             />
                         </FormControl>
                         <FormControl>
                             <Input
                                 placeholder="Add Users eg: John, Piyush, Jane"
                                 mb={1}
-
+                                onChange={(e) => handleSearch(e.target.value)}
                             />
                         </FormControl>
                         <Box w="100%" d="flex" flexWrap="wrap">
