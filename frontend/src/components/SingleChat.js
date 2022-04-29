@@ -9,13 +9,17 @@ import { getSender, getSenderFull } from "../config/ChatLogics";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModal from "./miscellaneous/ProfileModal";
- import ScrollableChat from "./ScrollableChat";
+import ScrollableChat from "./ScrollableChat";
 // import Lottie from "react-lottie";
 // import animationData from "../animations/typing.json"
 
 import io from "socket.io-client";
 import { ChatState } from "../Context/ChatProvider";
 import UpdateGroupChatModal from './miscellaneous/UpdateGroupChatModal';
+
+const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
+var socket, selectedChatCompare;
+
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -47,7 +51,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             setMessages(data);
             setLoading(false);
 
-            // socket.emit("join chat", selectedChat._id);
+            socket.emit("join chat", selectedChat._id);
         } catch (error) {
             toast({
                 title: "Error Occured!",
@@ -63,6 +67,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
     useEffect(() => {
         fetchMessages();
+        selectedChatCompare = selectedChat;
     }, [selectedChat])
     const sendMessage = async (event) => {
         if (event.key === "Enter" && newMessage) {
@@ -101,6 +106,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         }
 
     }
+
+    useEffect(() => {
+        socket = io(ENDPOINT)
+        socket.emit("setup", user);
+        socket.on("connected", () => setSocketConnected(true));
+    }, [])
 
     const typingHandler = (e) => {
         setNewMessage(e.target.value);
