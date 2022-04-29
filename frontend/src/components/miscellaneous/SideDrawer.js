@@ -29,6 +29,9 @@ import {
 } from "@chakra-ui/menu";
 import ChatLoading from '../ChatLoading';
 import UserListItem from './../userAvatar/UserListItem';
+import NotificationBadge from "react-notification-badge";
+import { Effect } from "react-notification-badge";
+import { getSender } from "../../config/ChatLogics";
 const SideDrawer = () => {
     const [search, setSearch] = useState("");
     const [searchResult, setSearchResult] = useState([]);
@@ -141,12 +144,31 @@ const SideDrawer = () => {
                     Talk-A-Tive
                 </Text>
                 <div>
-                    <Menu>
-                        <MenuButton>
-                            <BellIcon fontSize="2xl" m={1} />
-                        </MenuButton>
-                        {/* <MenuList></MenuList> */}
-                    </Menu>
+                <Menu>
+            <MenuButton p={1}>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
+              <BellIcon fontSize="2xl" m={1} />
+            </MenuButton>
+            <MenuList pl={2}>
+              {!notification.length && "No New Messages"}
+              {notification.map((notif) => (
+                <MenuItem
+                  key={notif._id}
+                  onClick={() => {
+                    setSelectedChat(notif.chat);
+                    setNotification(notification.filter((n) => n !== notif));
+                  }}
+                >
+                  {notif.chat.isGroupChat
+                    ? `New Message in ${notif.chat.chatName}`
+                    : `New Message from ${getSender(user, notif.chat.users)}`}
+                </MenuItem>
+              ))}
+            </MenuList>
+          </Menu>
                     <Menu>
                         <MenuButton as={Button} bg="white" rightIcon={<ChevronDownIcon />}>
                             <Avatar
