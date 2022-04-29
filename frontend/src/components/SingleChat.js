@@ -32,6 +32,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         ChatState();
 
 
+
     const fetchMessages = async () => {
         if (!selectedChat) return;
         try {
@@ -66,9 +67,42 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     }
     useEffect(() => {
+        socket = io(ENDPOINT)
+        socket.emit("setup", user);
+        socket.on("connected", () => setSocketConnected(true));
+    }, [])
+
+
+    useEffect(() => {
         fetchMessages();
         selectedChatCompare = selectedChat;
     }, [selectedChat])
+
+    // useEffect(() => {
+    //     socket.on("message recieved", (newMessageRecieved) => {
+    //         if (
+    //             !selectedChatCompare || // if chat is not selected or doesn't match current chat
+    //             selectedChatCompare._id !== newMessageRecieved.chat._id
+    //         ) {
+    //             if (!notification.includes(newMessageRecieved)) {
+    //                 setNotification([newMessageRecieved, ...notification]);
+    //                 setFetchAgain(!fetchAgain);
+    //             }
+    //         } else {
+    //             setMessages([...messages, newMessageRecieved]);
+    //         }
+    //     });
+    // });
+    useEffect(() => {
+        socket.on('message recieved', (newMessageRecieved) => {
+            if (!selectedChatCompare || selectedChat._id !== newMessageRecieved.chat_id) {
+
+            }
+            else{
+                setMessages([...messages,newMessageRecieved])
+            }
+        })
+    })
     const sendMessage = async (event) => {
         if (event.key === "Enter" && newMessage) {
             console.log("newMessage", newMessage)
@@ -90,7 +124,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     config
                 );
                 // console.log(data)
-                // socket.emit("new message", data);
+                socket.emit("new message", data);
                 setNewMessage("")
                 setMessages([...messages, data]);
             } catch (error) {
@@ -107,11 +141,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     }
 
-    useEffect(() => {
-        socket = io(ENDPOINT)
-        socket.emit("setup", user);
-        socket.on("connected", () => setSocketConnected(true));
-    }, [])
+
 
     const typingHandler = (e) => {
         setNewMessage(e.target.value);
