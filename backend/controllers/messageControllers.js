@@ -25,11 +25,18 @@ const sendMessage = asyncHandler(async (req, res) => {
         console.log("Invalid data passed into request");
         return res.sendStatus(400);
     }
+
+    var newMessage = {
+        sender: req.user._id,
+        content: content,
+        chat: chatId,
+    };
+
     try {
         var message = await Message.create(newMessage);
 
-        message = await message.populate("sender", "name pic").execPopulate();
-        message = await message.populate("chat").execPopulate();
+        message = await message.populate("sender", "name pic")
+        message = await message.populate("chat")
         message = await User.populate(message, {
             path: "chat.users",
             select: "name pic email",
@@ -42,11 +49,7 @@ const sendMessage = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error(error.message);
     }
-
-
-
-
-});
+})
 
 
 
